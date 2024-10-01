@@ -1,7 +1,24 @@
 from tensorflow.keras.preprocessing import image
 import numpy as np
+from rembg import remove
+from PIL import Image
 
-def load_and_preprocess_image(file, target_size=(224, 224)):
+
+def segmentar_imagen(file):
+  # Store path of the image in the variable input_path
+  input_path =  file
+
+  # Store path of the output image in the variable output_path
+  output_path = file
+
+  # Processing the image
+  input = Image.open(input_path)
+
+  # Removing the background from the given Image
+  output = remove(input)
+  rgb_im = output.convert('RGB')
+  rgb_im.save(output_path)
+def load_and_preprocess_image(file, target_size=(340, 340)):
   """
   Carga y preprocesa una imagen para la predicción.
 
