@@ -4,6 +4,7 @@ import os
 
 # Importar las funciones y clases
 from utils.preprocessing import load_and_preprocess_image
+from utils.preprocessing import segmentar_imagen
 from utils.postprocessing import process_predictions
 from utils.responses import HttpResponse
 
@@ -21,15 +22,17 @@ class_names = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'SIO']  # A
 @app.route('/predict', methods=['POST'])
 def predict():
   http_response = HttpResponse()
+  data = request.get_json()
+  print('data: ', data)
 
   # Validar si el parámetro 'sex' está en la solicitud
-  sex = request.form.get('sex')
+  sex = data['sex'] #request.form.get('sex')
   if sex not in ['M', 'F']:
     http_response.set_error(400, "El parámetro 'sex' es obligatorio y debe ser 'M' o 'F'.")
     return http_response.get_response()
 
   # Validar si se recibió el parámetro de la ruta del archivo
-  filepath = request.form.get('filepath')
+  filepath = data['filepath'] #request.form.get('filepath')
   if not filepath or not os.path.exists(filepath):
     http_response.set_error(400, "La ruta del archivo es inválida o no se encontró el archivo.")
     return http_response.get_response()
@@ -41,6 +44,8 @@ def predict():
     model = model_female
 
   try:
+    #Segmentar imagen
+    segmentar_imagen(filepath)
     # Cargar y preprocesar la imagen desde la ruta
     img_array = load_and_preprocess_image(filepath)
 
